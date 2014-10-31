@@ -9,14 +9,36 @@ from xbrowse import vcf_stuff
 from xbrowse.annotation import utils as annotation_utils
 
 
+# VEP adds a bunch of annotations; we ignore everything besides the ones on this white list
+SAVED_VEP_FIELDS = {
+    'allele',
+    'amino_acids',
+    'codons',
+    'consequence',
+    'domains',
+    'ensp',
+    'hgvsp'
+    'existing_variation',
+    'feature',
+    'gene',
+    'motif_name',
+    'motif_pos',
+    'polyphen',
+    'protein_position',
+    'pubmed',
+    'sift'
+}
+
+
 class HackedVEPAnnotator():
     """
     xBrowse depends on VEP annotations -
     This class is a wrapper around VEP that provides a pythonic interface to VEP annotations
     It should just call the REST API, but that is slow, so it spins out subprocesses :(
     """
-    def __init__(self, vep_perl_path, vep_cache_dir, vep_batch_size=20000, human_ancestor_fa=None):
+    def __init__(self, vep_perl_path, vep_fasta_path, vep_cache_dir, vep_batch_size=20000, human_ancestor_fa=None):
         self._vep_perl_path = vep_perl_path
+        self._vep_fasta_path = vep_fasta_path
         self._vep_cache_dir = vep_cache_dir
         self._vep_batch_size = vep_batch_size
         self._human_ancestor_fa = human_ancestor_fa
@@ -31,15 +53,18 @@ class HackedVEPAnnotator():
             "--protein",
             "--vcf",
             "--force_overwrite",
+            "--hgvs",
+            "--fasta", self._vep_fasta_path,
+            #"--everything",
             "--dir", self._vep_cache_dir,
             "-i", input_vcf,
             "-o", output_vcf,
         ]
-        if self._human_ancestor_fa is not None:
-            vep_command += [
-                "--plugin",
-                "LoF,human_ancestor_fa:{}".format(self._human_ancestor_fa),
-            ]
+        # if self._human_ancestor_fa is not None:
+        #     vep_command += [
+        #         "--plugin",
+        #         "LoF,human_ancestor_fa:{}".format(self._human_ancestor_fa),
+        #     ]
 
         if platform.system() == 'Darwin':
             vep_command.append("--compress")
@@ -107,14 +132,24 @@ def get_vep_annotation_from_csq_info(csq_info_string, csq_field_names):
         csq_values = s.split('|')
         for i in range(len(csq_values)):
 
-        # if a variant contains multiple annotations, use the indexed annotation
-            # TODO: need to test what happens here with triallelic variants
-            if '&' in csq_values[i]:
+            csq_field = csq_field_names[i].lower()
+            # ignore fields not in our whitelist
+            if csq_field not in SAVED_VEP_FIELDS:
+                continue
+
+            # if a variant contains multiple consequence annotations, use the worst one
+            if csq_field == 'consequence':
                 annots = csq_values[i].split('&')
                 val = annotation_utils.get_worst_vep_annotation(annots)
+
+            # otherwise if it contains multiple annotations for a different field, just make the value a list
+            # obvisouly this is suboptimal and we should not need to do this :/
+            elif '&' in csq_values[i]:
+                val = csq_values[i].split('&')
             else:
                 val = csq_values[i]
-            d[csq_field_names[i].lower()] = val
+
+            d[csq_field] = val
 
         d['is_nmd'] = "NMD_transcript_variant" in s
         d['is_nc'] = "nc_transcript_variant" in s

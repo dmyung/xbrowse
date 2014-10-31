@@ -24,6 +24,7 @@ class VariantAnnotator():
         )
         self._vep_annotator = HackedVEPAnnotator(
             vep_perl_path=settings_module.vep_perl_path,
+            vep_fasta_path=settings_module.vep_fasta_path,
             vep_cache_dir=settings_module.vep_cache_dir,
             vep_batch_size=settings_module.vep_batch_size,
             human_ancestor_fa=None,
