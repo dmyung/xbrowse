@@ -57,7 +57,7 @@ define postgresql::validate_db_connection(
     user        => $run_as,
     path        => '/bin:/usr/bin:/usr/local/bin',
     timeout     => $timeout,
-    require     => Package['postgresql-client'],
+    require     => Package['postgresql93'],
   }
 
   # This is a little bit of puppet magic.  What we want to do here is make

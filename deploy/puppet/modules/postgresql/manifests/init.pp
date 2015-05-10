@@ -1,7 +1,7 @@
 class postgresql {
     
-    package { 'postgresql-libs': ensure => latest }
-    package { 'postgresql-devel': ensure => latest }
+    package { 'postgresql93-libs': ensure => latest }
+    package { 'postgresql93-devel': ensure => latest }
 
     class { 'postgresql::globals':
         encoding => 'UTF8',
