@@ -8,7 +8,7 @@ class postgresql::lib::devel(
 
   validate_string($package_name)
 
-  package { 'postgresql-devel':
+  package { 'postgresql93-devel':
     ensure => $package_ensure,
     name   => $package_name,
     tag    => 'postgresql',

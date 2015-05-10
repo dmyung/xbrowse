@@ -11,7 +11,7 @@ class python {
         'mysql-devel': ensure => 'latest';
         'freetype': ensure => 'latest';
         'freetype-devel': ensure => 'latest';
-        'python-devel': ensure => 'latest';
+        'python27-devel': ensure => 'latest';
         'sqlite': ensure => 'latest';
         'sqlite-devel': ensure => 'latest';
         'openssl-devel': ensure => 'latest'; # openssl proper is delcared in modules/tools
@@ -35,7 +35,7 @@ class python {
                 'gdbm',
                 'gdbm-devel',
                 'mysql-devel',
-                'python-devel',
+                'python27-devel',
                 'sqlite',
                 'sqlite-devel',
                 'openssl-devel',

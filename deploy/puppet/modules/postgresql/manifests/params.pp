@@ -27,12 +27,12 @@ class postgresql::params inherits postgresql::globals {
       $package_version    = "${version_parts[0]}${version_parts[1]}"
 
       if $version == $default_version {
-        $client_package_name  = pick($client_package_name, 'postgresql')
-        $server_package_name  = pick($server_package_name, 'postgresql-server')
-        $contrib_package_name = pick($contrib_package_name,'postgresql-contrib')
-        $devel_package_name   = pick($devel_package_name, 'postgresql-devel')
-        $java_package_name    = pick($java_package_name, 'postgresql-jdbc')
-        $plperl_package_name  = pick($plperl_package_name, 'postgresql-plperl')
+        $client_package_name  = pick($client_package_name, 'postgresql93')
+        $server_package_name  = pick($server_package_name, 'postgresql93-server')
+        $contrib_package_name = pick($contrib_package_name,'postgresql93-contrib')
+        $devel_package_name   = pick($devel_package_name, 'postgresql93-devel')
+        $java_package_name    = pick($java_package_name, 'postgresql93-jdbc')
+        $plperl_package_name  = pick($plperl_package_name, 'postgresql93-plperl')
         $service_name         = pick($service_name, 'postgresql')
         $bindir               = pick($bindir, '/usr/bin')
         $datadir              = $::operatingsystem ? {
